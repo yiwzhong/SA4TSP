@@ -212,7 +212,13 @@ public class Simulations {
 		int[] iterations = new int[TIMES]; //last improving iteration
 		System.out.println(Simulations.getParaSetting());
 		for (int i = 0; i < TIMES; i++) {
-			s = Methods.SA(MAX_GENERATION);
+			if (Simulations.method == EMethodType.SA) {
+			    s = Methods.simulatedAnnealingWithAdativeInitialTemperature(MAX_GENERATION);
+			} else if (Simulations.method == EMethodType.TS) {
+				s = Methods.tabuSearch();
+			} else {
+				System.out.println("Cannot reach here!");
+			}
 			makespans[i] = s.getTourLength();
 			iterations[i] = s.getLastImproving();
 			if (Simulations.OUT_INDIVIDUAL_RUNNING_DATA) {
@@ -275,7 +281,7 @@ public class Simulations {
 	public static boolean isSavingFinalResults() { return Simulations.SAVING_FINAL_RESULTS;}
 	public static boolean isSavingProcessData() { return Simulations.SAVING_PROCESS_DATA;}
 	public static String getParaSetting() {
-		String str = Simulations.ALGORITHM + "-" + Simulations.knowledgeType + "-" + Simulations.neighborType;
+		String str = Simulations.method + "-" + Simulations.knowledgeType + "-" + Simulations.neighborType;
 		str +=  " NCN=" + Simulations.nearCityNumber;
 		str += " G=" + Simulations.MAX_GENERATION + " MCLF=" + Simulations.MARKOV_CHAIN_LENGTH_FACTOR;
 		return str;
@@ -288,17 +294,17 @@ public class Simulations {
 	public static EKnowledgeType knowledgeType = EKnowledgeType.PROBLEM;
 	public static ENeighborType neighborType = ENeighborType.BEST;
 		
-	public static final String ALGORITHM = "SA";
+	public static final EMethodType method = EMethodType.TS;
 	public static final int MAX_GENERATION = 1000;
 	public static final int MARKOV_CHAIN_LENGTH_FACTOR = 100;
-	public static final int TIMES = 30;
+	public static final int TIMES = 1;
 
 	public static final boolean OUT_INDIVIDUAL_RUNNING_DATA = true;
 	public static final boolean SAVING_PROCESS_DATA = false;
 	public static final boolean SAVING_FINAL_RESULTS = false;
 	public static final boolean SAVING_PARA_TUNNING = true;
-	public static final boolean USE_GREEDY_RANDOM_STRATEGY = false;
-	public static final ETestType TEST_TYPE = ETestType.MULTIPLE_INSTANCE;
+	public static final boolean USE_GREEDY_RANDOM_STRATEGY = true;
+	public static final ETestType TEST_TYPE = ETestType.SINGLE_INSTANCE;
 	
 	//parameters for SA algorithm 
 	public static double t0 = 1000;

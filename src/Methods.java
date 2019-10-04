@@ -11,7 +11,7 @@ public class Methods {
 	/**
      * Simple Simulated Annealing Algorithm for TSP
 	 */
-	public static Solution SA( int MAX_G) {
+	public static Solution simulatedAnnealingWithAdativeInitialTemperature( int MAX_G) {
 		Solution current = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
 		Solution best = new Solution(current);
 		final int cityNumber = Problems.getProblem().getCityNumber(); 
@@ -79,6 +79,69 @@ public class Methods {
 		return best;
 	}
 
+	/**
+	 * Tabu search for TSP. A simplified version of the algorithm in following paper.
+	 * 
+	 * Knox, J. (1994). Tabu search performance on the symmetric traveling salesman problem. 
+	 *   Computers & Operations Research, 21(8), 867-876.
+	 * 
+	 * @return
+	 */
+	public static Solution tabuSearch() {
+		Solution current = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
+		Solution best = new Solution(current);
+		final int cityNumber = Problems.getProblem().getCityNumber(); 
+		int[][] tabu = new int[cityNumber][cityNumber];
+		int met = 0;
+		final int MAX_ITERATIONS = 20 * cityNumber;
+		final int TABU_TENURE = cityNumber * 3;
+		while (met++ < MAX_ITERATIONS) {
+			//Find best inverse operator
+			Neighbor bestNb = new Neighbor(0,0,Integer.MAX_VALUE);
+			int firstCity = 0;
+			for (int ci = 0; ci < cityNumber - 2; ci++) {
+				int nci = current.next(ci);
+				int cj = current.next(nci);
+				while ( cj != firstCity) {
+					int ncj = current.next(cj);
+					Neighbor nb = current.findInverse(ci, cj);
+					if (tabu[ci][cj] < met /*first added edge*/ ||
+							tabu[nci][ncj] < met /*second added edge*/) {
+						if (nb.getDelta() < bestNb.getDelta()) {
+							bestNb = nb;
+						}
+					} else if (current.tourLength + nb.delta < best.tourLength){//Aspiration
+						if (nb.getDelta() < bestNb.getDelta()) {
+							bestNb = nb;
+						}
+					}
+					cj = current.next(cj);
+				}
+			}
+			
+			//Update tabu list
+			int ci = bestNb.x1;
+			int cj = bestNb.y1;
+			//The first deleted edge
+			int nci = current.next(ci);
+			tabu[ci][nci] = met + TABU_TENURE;
+			tabu[nci][ci] = met + TABU_TENURE;
+			//The second deleted edge
+			int ncj = current.next(cj);
+			tabu[cj][ncj] = met + TABU_TENURE;
+			tabu[ncj][cj] = met + TABU_TENURE;
+			
+			//Update current solution
+			current.update(bestNb);
+			if (current.getTourLength() < best.getTourLength()) {
+				best.update(current);
+				best.setLastImproving(met);
+			}
+			System.out.println(current.getTourLength());
+			//System.out.println(current.getTourLength() + "-" + best.getTourLength());
+		}
+		return best;
+	}
 
 	private static void saveConvergenceData( double[] ts, double[] vs, double[] bs) {
 		try {
@@ -113,7 +176,7 @@ public class Methods {
 		Solution s;
 		double tourLength = 0;
 		for (int i = 0; i < TIMES; i++) {
-			s = Methods.SA(1000);
+			s = Methods.simulatedAnnealingWithAdativeInitialTemperature(1000);
 			System.out.println(i + "-:" + s.getTourLength());
 			tourLength += s.getTourLength();
 		}

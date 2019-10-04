@@ -189,7 +189,7 @@ public class Solution implements Comparable<Solution> {
 		return bestMove;
 	}
 
-	private Neighbor findInverse(final int ci, final int cj) {
+	public Neighbor findInverse(final int ci, final int cj) {
 		Problems problem = Problems.getProblem();
 		int nci = next(ci);
 		int ncj = next(cj);
