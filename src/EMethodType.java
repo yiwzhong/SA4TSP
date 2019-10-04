@@ -1,4 +1,4 @@
 
 public enum EMethodType {
-    SA, TS
+    SA, TS, VND, VNS, GVNS
 }

@@ -137,10 +137,155 @@ public class Methods {
 				best.update(current);
 				best.setLastImproving(met);
 			}
-			System.out.println(current.getTourLength());
+			//System.out.println(current.getTourLength());
 			//System.out.println(current.getTourLength() + "-" + best.getTourLength());
 		}
 		return best;
+	}
+	
+	/**
+	 * Variable neighbor descend method
+	 * 
+	 * @return
+	 */
+	public static Solution varaibleNeighborDescent() {
+		Solution current = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
+		Simulations.clearMaxInsertBlockSize(); //allow single city only
+        ENeighborType[] nbTypes;
+        nbTypes = new ENeighborType[]{ENeighborType.INVERSE, 
+        		ENeighborType.INSERT, ENeighborType.SWAP};
+        
+		int nbIdx = 0;
+		while (nbIdx < nbTypes.length) {
+			System.out.println(current.tourLength);
+			Solution s;
+			s = hillClimbing(current, nbTypes[nbIdx]);
+			if (s.getTourLength() < current.getTourLength()) {
+				current = s;
+				nbIdx = 0;
+			} else {
+				nbIdx++;
+			}
+		}
+		return current;
+	}
+	
+	/**
+	 * Variable neighbor descend method
+	 * 
+	 * @return
+	 */
+	public static Solution varaibleNeighborSearch() {
+		Solution current = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
+		Simulations.clearMaxInsertBlockSize(); //allow single city only
+        ENeighborType[] nbTypes;
+        nbTypes = new ENeighborType[]{ENeighborType.INVERSE, 
+        		ENeighborType.INSERT, ENeighborType.SWAP};
+        boolean improved = true;
+        while (improved) {
+        	improved = false;
+        	int nbIdx = 0;
+        	while (nbIdx < nbTypes.length) {
+        		//System.out.println(current.tourLength);
+        		Solution s;
+        		s = hillClimbing(perturbSolution(current, 2, nbTypes[2]), nbTypes[nbIdx]);
+        		if (s.getTourLength() < current.getTourLength()) {
+        			improved = true;
+        			current = s;
+        			nbIdx = 0;
+        		} else {
+        			nbIdx++;
+        		}
+        	}
+        }
+		return current;
+	}
+	
+	/**
+	 * General variable neighbor descend method
+	 * 
+	 * @return
+	 */
+	public static Solution generalVaraibleNeighborSearch() {
+		Solution current = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
+		Simulations.clearMaxInsertBlockSize(); //allow single city only
+        ENeighborType[] nbTypes;
+        nbTypes = new ENeighborType[]{ENeighborType.INVERSE, 
+        		ENeighborType.INSERT, ENeighborType.SWAP};
+        boolean improved = true;
+        while (improved) {
+        	improved = false;
+        	int sIdx = 0; //neighbor index for shaking
+        	while (sIdx < nbTypes.length) {
+        		Solution s = perturbSolution(current, 2, nbTypes[sIdx++]);
+        		int nbIdx = 0;
+        		while (nbIdx < nbTypes.length) {
+        			//System.out.println(current.tourLength);
+        			Solution ss;
+        			ss = hillClimbing(s, nbTypes[nbIdx++]);
+        			if (ss.tourLength < s.tourLength) {
+        				s = ss;
+        				nbIdx = 0;
+        			}
+        			if (ss.getTourLength() < current.getTourLength()) {
+        				improved = true;
+        				current = ss;
+        				sIdx = 0;
+         				nbIdx = nbTypes.length; //exit from inner loop
+        			} 
+        		}
+        	}
+        }
+		return current;
+	}
+	
+	private static Solution hillClimbing(Solution s, ENeighborType neighborType) {
+		Solution current = new Solution(s);
+		int cityNumber = current.getCityNumber();
+		boolean improved = true;
+		while (improved) {
+			improved = false;
+			int firstCity = 0;
+			for (int ci = 0; ci < cityNumber - 2 && !improved; ci++) {
+				int nci = current.next(ci);
+				int cj = current.next(nci);
+				while ( cj != firstCity && !improved) {
+					Neighbor nb;
+					if (neighborType == ENeighborType.INVERSE) {
+					    nb = current.findInverse(ci, cj);
+					} else if (neighborType == ENeighborType.INSERT) {
+					    nb = current.findInsert(ci, cj);
+					} else {//swap
+						nb = current.findSwap(ci, cj);
+					}
+					if (nb.getDelta() < 0 ) {
+						current.update(nb);
+						improved = true;
+					}
+					cj = current.next(cj);
+				}
+			}
+		}
+		return current;
+	}
+	
+	private static Solution perturbSolution(Solution s, int times, ENeighborType nt) {
+		Solution current = new Solution(s);
+		while (times-- > 0) {
+			int ci = rand.nextInt(current.getCityNumber());
+			int cj = ci;
+			while (cj == ci || cj == current.next(ci) || cj== current.previous(ci)) {
+				cj = rand.nextInt(current.getCityNumber());
+			}
+			if (nt == ENeighborType.INSERT) {
+				current.update(current.findInsert(ci, cj));
+			} else if (nt == ENeighborType.INVERSE) {
+				current.update(current.findInverse(ci, cj));
+			} else if (nt == ENeighborType.SWAP) {
+				current.update(current.findSwap(ci, cj));
+			}
+		}
+		return current;
 	}
 
 	private static void saveConvergenceData( double[] ts, double[] vs, double[] bs) {

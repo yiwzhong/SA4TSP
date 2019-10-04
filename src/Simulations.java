@@ -9,7 +9,7 @@ public class Simulations {
 	public static void main(String[] args) {
 		Problems.setNearCityParameters(Simulations.nearCityNumber);
 		String filePath = (new File("")).getAbsolutePath() + "/../TSPLIB6small/"; 
-		filePath = (new File("")).getAbsolutePath() + "/../TSPLIB6median/"; 
+		//filePath = (new File("")).getAbsolutePath() + "/../TSPLIB6median/"; 
 		if (Simulations.TEST_TYPE == ETestType.SINGLE_INSTANCE) {
 			filePath = (new File("")).getAbsolutePath() + "/../TSPLIB6small/";
 			String fileName = filePath+"01eil51.txt";
@@ -216,6 +216,12 @@ public class Simulations {
 			    s = Methods.simulatedAnnealingWithAdativeInitialTemperature(MAX_GENERATION);
 			} else if (Simulations.method == EMethodType.TS) {
 				s = Methods.tabuSearch();
+			} else if (Simulations.method == EMethodType.VND) {
+				s = Methods.varaibleNeighborDescent();
+			} else if (Simulations.method == EMethodType.VNS) {
+				s = Methods.varaibleNeighborSearch();
+			} else if (Simulations.method == EMethodType.GVNS) {
+				s = Methods.generalVaraibleNeighborSearch();
 			} else {
 				System.out.println("Cannot reach here!");
 			}
@@ -290,21 +296,22 @@ public class Simulations {
 	
 	public static EKnowledgeType getKnowledgeType() { return Simulations.knowledgeType; }
 	public static int getMaxInsertBlockSize() { return Simulations.maxInsertBlockSize; }
+	public static void clearMaxInsertBlockSize() { Simulations.maxInsertBlockSize = 1; }
 	
 	public static EKnowledgeType knowledgeType = EKnowledgeType.PROBLEM;
 	public static ENeighborType neighborType = ENeighborType.BEST;
 		
-	public static final EMethodType method = EMethodType.TS;
+	public static final EMethodType method = EMethodType.GVNS;
 	public static final int MAX_GENERATION = 1000;
 	public static final int MARKOV_CHAIN_LENGTH_FACTOR = 100;
-	public static final int TIMES = 1;
+	public static final int TIMES = 30;
 
 	public static final boolean OUT_INDIVIDUAL_RUNNING_DATA = true;
 	public static final boolean SAVING_PROCESS_DATA = false;
 	public static final boolean SAVING_FINAL_RESULTS = false;
 	public static final boolean SAVING_PARA_TUNNING = true;
 	public static final boolean USE_GREEDY_RANDOM_STRATEGY = true;
-	public static final ETestType TEST_TYPE = ETestType.SINGLE_INSTANCE;
+	public static final ETestType TEST_TYPE = ETestType.MULTIPLE_INSTANCE;
 	
 	//parameters for SA algorithm 
 	public static double t0 = 1000;

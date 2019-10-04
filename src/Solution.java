@@ -204,7 +204,7 @@ public class Solution implements Comparable<Solution> {
 	}
 
 
-	private Neighbor findInsert(final int ci, final int cj) {
+	public Neighbor findInsert(final int ci, final int cj) {
 		Problems problem = Problems.getProblem();
 
 		int x1 = ci;
@@ -239,7 +239,7 @@ public class Solution implements Comparable<Solution> {
 		return new Neighbor(x1, y1, y2, movDelta);
 	}
 
-	private Neighbor findSwap(final int ci, final int cj) {
+	public Neighbor findSwap(final int ci, final int cj) {
 		Problems problem = Problems.getProblem();
 
 		int x1 = next(ci);
