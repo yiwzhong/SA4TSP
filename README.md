@@ -1,6 +1,9 @@
 # SA4TSP
 * A simple simulated annealing algorithm for traveling salesman problem
 * Tabu search for TSP
+* Variable neighborhood descent
+* Variable neighborhood search
+* General variable neighborhood search
 
 ## 2019-9-29
 * 将项目pull到本地，理解项目代码并运行项目
