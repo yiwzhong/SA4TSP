@@ -239,7 +239,7 @@ public class Methods {
 		return current;
 	}
 	
-	private static Solution hillClimbing(Solution s, ENeighborType neighborType) {
+	public static Solution hillClimbing(Solution s, ENeighborType neighborType) {
 		Solution current = new Solution(s);
 		int cityNumber = current.getCityNumber();
 		boolean improved = true;

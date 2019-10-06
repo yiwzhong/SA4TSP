@@ -28,6 +28,15 @@ public class Solution implements Comparable<Solution> {
 		tourLength = p.evaluate(nTour);
 		//System.out.println(tourLength);
 	}
+	
+	public Solution(int[] tour) {
+		nTour = tour.clone();
+		pTour = new int[nTour.length];
+		for (int i = 0; i< nTour.length; i++ ) {
+			pTour[nTour[i]] = i;
+		}
+		tourLength = Problems.getProblem().evaluate(nTour);
+	}
 
 	public Solution(Solution s) {
 		this.nTour = s.nTour.clone();
