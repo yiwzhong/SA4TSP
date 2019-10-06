@@ -9,7 +9,7 @@ public class AntMethods {
 		Solution best = new Solution(Simulations.USE_GREEDY_RANDOM_STRATEGY);
 		final double alpha = 1.0;
 		final double beta = 5.0;
-		final double rho = 0.5;
+		final double rho = 0.1;
 
 		double[][] pher;
 		double[][] heur;
@@ -18,7 +18,7 @@ public class AntMethods {
 		for (int g = 0; g < MAX_G; g++) {
 			for (int ant = 0; ant < POP_SIZE; ant++) {
 				Solution current = AntMethods.buildSolution(pher, alpha, heur);
-				//current = Methods.hillClimbing(current, ENeighborType.INVERSE);
+				current = Methods.hillClimbing(current, ENeighborType.INVERSE);
 				if ( current.tourLength < best.tourLength ) {
 					best = new Solution(current);
 					best.setLastImproving(g);
